@@ -1,0 +1,174 @@
+/* ==========================================================================
+   THEME TOGGLE
+   ========================================================================== */
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  position: absolute;
+  top: 50%;
+  right: 2.75rem;
+  transform: translateY(-50%);
+  z-index: 12;
+}
+
+.greedy-nav {
+  padding-right: 5.5rem;
+}
+
+.theme-toggle__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: static;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid $border-color;
+  border-radius: 50%;
+  background: transparent;
+  color: $primary-color;
+  cursor: pointer;
+
+  &:hover,
+  &.is-active {
+    color: $masthead-link-color-hover;
+    border-color: mix(#000, $border-color, 20%);
+    background: mix(#fff, $primary-color, 88%);
+  }
+}
+
+.theme-toggle__icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+html[data-theme="dark"] {
+  background: #0d1117;
+}
+
+html[data-theme="dark"] body {
+  background: #0d1117;
+  color: #d8dee9;
+}
+
+html[data-theme="dark"] .masthead,
+html[data-theme="dark"] .greedy-nav,
+html[data-theme="dark"] .author__urls,
+html[data-theme="dark"] .greedy-nav .hidden-links {
+  background: #0d1117;
+}
+
+html[data-theme="dark"] .masthead,
+html[data-theme="dark"] .author__avatar img,
+html[data-theme="dark"] .author__urls,
+html[data-theme="dark"] .greedy-nav .hidden-links,
+html[data-theme="dark"] .page__content h1,
+html[data-theme="dark"] hr {
+  border-color: #30363d;
+}
+
+html[data-theme="dark"] .greedy-nav a,
+html[data-theme="dark"] .author__urls a,
+html[data-theme="dark"] .author__urls_sm a,
+html[data-theme="dark"] .author__name,
+html[data-theme="dark"] .author__bio {
+  color: #fff;
+}
+
+html[data-theme="dark"] .greedy-nav a:hover,
+html[data-theme="dark"] .author__urls a:hover,
+html[data-theme="dark"] .author__urls_sm a:hover {
+  color: #7db5a8;
+}
+
+html[data-theme="dark"] .greedy-nav .visible-links a:before {
+  background: #7db5a8;
+}
+
+html[data-theme="dark"] .greedy-nav .hidden-links a:hover {
+  background: #161b22;
+}
+
+html[data-theme="dark"] .greedy-nav .hidden-links:before,
+html[data-theme="dark"] .author__urls:before {
+  border-color: #30363d transparent;
+}
+
+html[data-theme="dark"] .greedy-nav .hidden-links:after,
+html[data-theme="dark"] .author__urls:after {
+  border-color: #0d1117 transparent;
+}
+
+html[data-theme="dark"] a {
+  color: #8ab4f8;
+}
+
+html[data-theme="dark"] a:visited {
+  color: #b7a8ff;
+}
+
+html[data-theme="dark"] .greedy-nav a:visited,
+html[data-theme="dark"] .author__urls a:visited,
+html[data-theme="dark"] .author__urls_sm a:visited {
+  color: #fff;
+}
+
+html[data-theme="dark"] .page__content p a,
+html[data-theme="dark"] .page__content li a,
+html[data-theme="dark"] .post-content p a,
+html[data-theme="dark"] .post-content li a {
+  color: #8fd0c1;
+}
+
+html[data-theme="dark"] .page__content p a:hover,
+html[data-theme="dark"] .page__content li a:hover,
+html[data-theme="dark"] .post-content p a:hover,
+html[data-theme="dark"] .post-content li a:hover {
+  color: #a8e0d5;
+  background-color: rgba(125, 181, 168, 0.18);
+}
+
+html[data-theme="dark"] p > code,
+html[data-theme="dark"] a > code,
+html[data-theme="dark"] li > code,
+html[data-theme="dark"] figcaption > code,
+html[data-theme="dark"] td > code {
+  background: #161b22;
+  border-color: #30363d;
+}
+
+html[data-theme="dark"] .theme-toggle__button {
+  color: #d8dee9;
+  border-color: #30363d;
+}
+
+html[data-theme="dark"] .theme-toggle__button:hover,
+html[data-theme="dark"] .theme-toggle__button.is-active {
+  color: #f2cc60;
+  border-color: #7db5a8;
+  background: #161b22;
+}
+
+html[data-theme="dark"] .social-icons .fa,
+html[data-theme="dark"] .social-icons .fa-github,
+html[data-theme="dark"] .social-icons .fa-github-alt,
+html[data-theme="dark"] .social-icons .fa-github-square {
+  color: #d8dee9;
+}
+
+html[data-theme="dark"] .fans-card {
+  background: #161b22 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+  color: #d8dee9 !important;
+}
+
+html[data-theme="dark"] button {
+  color: #fff;
+}

@@ -1,0 +1,29 @@
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <button class="greedy-nav__toggle" type="button" aria-label="Toggle navigation"><div class="navicon"></div></button>
+        <ul class="visible-links">
+          <li class="masthead__menu-item masthead__menu-item--lg masthead__menu-home-item"><a href="{{ '/#about-me' | relative_url }}">Homepage</a></li>
+          {% for link in site.data.navigation.main %}
+            <li class="masthead__menu-item"><a href="{{ link.url | relative_url }}">{{ link.title }}</a></li>
+          {% endfor %}
+        </ul>
+        <div class="theme-toggle" aria-label="Theme selector">
+          <button class="theme-toggle__button" type="button" data-theme-choice="light" aria-label="Use light theme" title="Light theme">
+            <svg class="theme-toggle__icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v3M12 19v3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M2 12h3M19 12h3M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"></path>
+            </svg>
+          </button>
+          <button class="theme-toggle__button" type="button" data-theme-choice="dark" aria-label="Use dark theme" title="Dark theme">
+            <svg class="theme-toggle__icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 7 7 0 1 0 20 15.5z"></path>
+            </svg>
+          </button>
+        </div>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>

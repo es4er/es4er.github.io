@@ -1,0 +1,7 @@
+_site/
+.bundle/
+vendor/bundle/
+push.sh
+.DS_Store
+backup/*
+!backup/rednote-followers-latest.csv

@@ -1,0 +1,205 @@
+{% assign is_preview = include.preview | default: false %}
+<section class="reading-notes{% if is_preview %} reading-notes--preview{% else %} reading-notes--page{% endif %}" data-reading-notes data-reading-preview="{{ is_preview }}" aria-labelledby="reading-notes-title">
+  <div class="reading-notes__heading">
+    <div class="reading-notes__heading-copy">
+      <p class="reading-notes__eyebrow">Knowledge archive</p>
+      <h1 id="reading-notes-title">📝 Reading Notes{% if is_preview %} <span class="reading-notes__title-note">(Latest updates)</span>{% endif %}</h1>
+      <p class="reading-notes__intro">A growing collection of my notes on textbooks, courses, and technical materials.</p>
+    </div>
+    <div class="reading-notes__heading-actions">
+      <a class="reading-notes__github" href="https://github.com/es4er/cs336-assignment1-basics" target="_blank" rel="noopener">
+        <span><i class="fab fa-github" aria-hidden="true"></i> View repository</span>
+        <img class="reading-notes__stars" src="https://img.shields.io/github/stars/es4er/cs336-assignment1-basics?style=flat-square&amp;color=7db5a8" alt="GitHub stars">
+      </a>
+      {% if is_preview %}
+        <a class="reading-notes__all" href="{{ '/reading-notes/' | relative_url }}" target="_self">View all notes <span aria-hidden="true">↗</span></a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="reading-notes__summary" aria-label="Reading notes summary">
+    <span><strong data-reading-count="all">{{ site.data.reading_notes | size }}</strong> notes</span>
+    <span><strong data-reading-count="updating">{{ site.data.reading_notes | where: "status", "updating" | size }}</strong> updating</span>
+    <span><strong data-reading-count="completed">{{ site.data.reading_notes | where: "status", "completed" | size }}</strong> completed</span>
+    <span class="reading-notes__sync" data-reading-sync aria-live="polite">Checking GitHub updates…</span>
+  </div>
+
+  {% unless is_preview %}
+    <div class="reading-notes__filters" role="group" aria-label="Filter reading notes by status">
+      <button class="reading-filter is-active" type="button" data-reading-filter="all" aria-pressed="true">All</button>
+      <button class="reading-filter" type="button" data-reading-filter="updating" aria-pressed="false">Updating</button>
+      <button class="reading-filter" type="button" data-reading-filter="completed" aria-pressed="false">Completed</button>
+      <button class="reading-filter" type="button" data-reading-filter="planned" aria-pressed="false">Planned</button>
+    </div>
+  {% endunless %}
+
+  {% assign sorted_reading_notes = site.data.reading_notes | sort: "updated_at" | reverse %}
+  <div class="reading-notes__grid" data-reading-grid>
+    {% for note in sorted_reading_notes %}
+      {% assign hide_preview_card = false %}
+      {% if is_preview and forloop.index > 4 %}{% assign hide_preview_card = true %}{% endif %}
+      {% include reading-note-card.html note=note index=forloop.index hidden=hide_preview_card %}
+    {% endfor %}
+  </div>
+
+  {% unless is_preview %}
+    <p class="reading-notes__empty" data-reading-empty hidden>No notes in this category yet.</p>
+  {% endunless %}
+</section>
+
+<script>
+(function () {
+  var roots = document.querySelectorAll('[data-reading-notes]');
+  if (!roots.length) return;
+
+  var repository = 'es4er/cs336-assignment1-basics';
+  var apiBase = 'https://api.github.com/repos/' + repository + '/commits?per_page=1&path=';
+  var cacheTtl = 15 * 60 * 1000;
+  var requestTimeout = 8000;
+
+  function formatDate(value) {
+    var date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+  }
+
+  function readCache(path) {
+    try {
+      var cached = JSON.parse(localStorage.getItem('reading-note:' + path));
+      if (cached && cached.date) {
+        cached.fresh = Boolean(cached.cachedAt && Date.now() - cached.cachedAt < cacheTtl);
+        return cached;
+      }
+    } catch (error) {}
+    return null;
+  }
+
+  function writeCache(path, value) {
+    try { localStorage.setItem('reading-note:' + path, JSON.stringify(value)); } catch (error) {}
+  }
+
+  function readFallback(card) {
+    var date = card.getAttribute('data-fallback-updated-at');
+    if (!date) return null;
+    return {
+      card: card,
+      date: date,
+      url: card.getAttribute('data-fallback-update-url') || '',
+      source: 'site'
+    };
+  }
+
+  async function fetchLatest(card) {
+    var path = card.getAttribute('data-github-path');
+    if (!path) throw new Error('Missing GitHub path');
+    var cached = readCache(path);
+    if (cached && cached.fresh) return { card: card, date: cached.date, url: cached.url, source: 'cache' };
+
+    var controller = typeof AbortController === 'function' ? new AbortController() : null;
+    var timeoutId = controller ? setTimeout(function () { controller.abort(); }, requestTimeout) : null;
+
+    try {
+      var response = await fetch(apiBase + encodeURIComponent(path), {
+        headers: { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+        cache: 'no-store',
+        signal: controller ? controller.signal : undefined
+      });
+      if (!response.ok) throw new Error('GitHub API ' + response.status);
+
+      var commits = await response.json();
+      var latest = commits[0];
+      var date = latest && latest.commit && latest.commit.committer && latest.commit.committer.date;
+      if (!date && latest && latest.commit && latest.commit.author) date = latest.commit.author.date;
+      if (!date) throw new Error('No commit date');
+
+      var result = { card: card, date: date, url: latest.html_url, source: 'live' };
+      writeCache(path, { date: date, url: latest.html_url, cachedAt: Date.now() });
+      return result;
+    } catch (error) {
+      if (cached) return { card: card, date: cached.date, url: cached.url, source: 'stale-cache' };
+      var fallback = readFallback(card);
+      if (fallback) return fallback;
+      throw error;
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
+    }
+  }
+
+  function applyUpdates(root, updates) {
+    var grid = root.querySelector('[data-reading-grid]');
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('[data-note-key]'));
+    var byCard = new Map();
+    updates.forEach(function (item) { byCard.set(item.card, item); });
+
+    updates.forEach(function (item) {
+      var dateLabel = formatDate(item.date);
+      var time = item.card.querySelector('[data-note-updated]');
+      if (time && dateLabel) {
+        time.dateTime = item.date;
+        time.textContent = 'Updated ' + dateLabel;
+        time.hidden = false;
+      }
+    });
+
+    cards.sort(function (a, b) {
+      var aUpdate = byCard.get(a);
+      var bUpdate = byCard.get(b);
+      var aTime = aUpdate ? new Date(aUpdate.date).getTime() : 0;
+      var bTime = bUpdate ? new Date(bUpdate.date).getTime() : 0;
+      return bTime - aTime || Number(a.dataset.originalIndex) - Number(b.dataset.originalIndex);
+    });
+    cards.forEach(function (card, index) {
+      grid.appendChild(card);
+      if (root.dataset.readingPreview === 'true') card.hidden = index > 3;
+    });
+  }
+
+  function applyFilters(root) {
+    var filters = root.querySelectorAll('[data-reading-filter]');
+    var empty = root.querySelector('[data-reading-empty]');
+    if (!filters.length) return;
+
+    function updateFilter(selected) {
+      var cards = root.querySelectorAll('[data-note-key]');
+      var visibleCount = 0;
+      filters.forEach(function (item) {
+        var active = item.getAttribute('data-reading-filter') === selected;
+        item.classList.toggle('is-active', active);
+        item.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      cards.forEach(function (card) {
+        var visible = selected === 'all' || card.getAttribute('data-reading-status') === selected;
+        card.hidden = !visible;
+        if (visible) visibleCount += 1;
+      });
+      if (empty) empty.hidden = visibleCount !== 0;
+    }
+
+    filters.forEach(function (button) {
+      button.addEventListener('click', function () {
+        var selected = button.getAttribute('data-reading-filter');
+        updateFilter(selected);
+      });
+    });
+  }
+
+  roots.forEach(function (root) {
+    applyFilters(root);
+
+    var cards = Array.prototype.slice.call(root.querySelectorAll('[data-note-key]'));
+    cards.forEach(function (card, index) { card.dataset.originalIndex = index; });
+    Promise.allSettled(cards.map(function (card) { return fetchLatest(card); })).then(function (results) {
+      var updates = results.filter(function (result) { return result.status === 'fulfilled'; }).map(function (result) { return result.value; });
+      applyUpdates(root, updates);
+      var sync = root.querySelector('[data-reading-sync]');
+      if (sync) {
+        var freshUpdates = updates.filter(function (item) { return item.source === 'live' || item.source === 'cache'; });
+        if (updates.length === cards.length && freshUpdates.length === cards.length) sync.textContent = 'GitHub updates synced';
+        else if (updates.length === cards.length) sync.textContent = 'Showing latest available updates';
+        else if (updates.length) sync.textContent = 'Some updates available';
+        else sync.textContent = 'Showing saved order';
+      }
+    });
+  });
+}());
+</script>

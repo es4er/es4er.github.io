@@ -1,0 +1,30 @@
+# main links
+main:
+  - title: "About Me"
+    url: "/#about-me"
+
+  - title: "News"
+    url: "/#news"
+
+  - title: "Publications"
+    url: "/#publications"
+
+  - title: "Honors and Awards"
+    url: "/#honors-and-awards"
+
+  - title: "Educations"
+    url: "/#educations"
+
+  - title: "Teaching"
+    url: "/#teaching"
+
+  - title: "Hobbies"
+    url: "/#hobbies"
+
+  - title: "Reading Notes"
+    url: "/reading-notes/"
+
+  # - title: "Rednote Followers"
+  #   url: "/#rednote-followers"
+  - title: "Rednote"
+    url: /rednote/

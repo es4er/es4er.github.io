@@ -1,0 +1,7 @@
+<script src="{{ '/assets/js/main.min.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/theme-toggle.js' | relative_url }}"></script>
+
+{% include analytics.html %}
+{% if page.author_profile or layout.author_profile %}
+  {% include fetch_google_scholar_stats.html %}
+{% endif %}

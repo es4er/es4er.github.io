@@ -1,0 +1,40 @@
+{% assign card_index = include.index | default: 1 %}
+{% assign note = include.note %}
+<article class="reading-card"{% if include.hidden %} hidden{% endif %} data-reading-status="{{ note.status }}" data-note-key="{{ note.title | slugify }}" data-github-path="{{ note.github_path | escape }}" data-fallback-updated-at="{{ note.updated_at | escape }}" data-fallback-update-url="{{ note.updated_url | default: note.notes_url | escape }}">
+  <div class="reading-card__cover reading-card__cover--{{ note.cover_theme }}{% if note.cover_image %} reading-card__cover--image{% endif %}">
+    {% if note.cover_image %}
+      <img class="reading-card__cover-image" src="{{ note.cover_image | relative_url }}" alt="{{ note.title }} cover" loading="lazy">
+    {% else %}
+      <div class="reading-card__cover-no">RN · {{ card_index | prepend: '0' | slice: -2, 2 }}</div>
+      <div class="reading-card__cover-copy">
+        <span>{{ note.eyebrow }}</span>
+        <strong>{{ note.short_title }}</strong>
+      </div>
+      <div class="reading-card__cover-mark" aria-hidden="true"></div>
+    {% endif %}
+  </div>
+
+  <div class="reading-card__body">
+    <div class="reading-card__topline">
+      <span class="reading-card__status reading-card__status--{{ note.status }}">
+        <span aria-hidden="true"></span>{{ note.status_label }}
+      </span>
+      <span class="reading-card__index">{{ card_index | prepend: '0' | slice: -2, 2 }}</span>
+    </div>
+    <h2>{{ note.title }}</h2>
+    <p class="reading-card__meta">
+      {% for author in note.authors %}
+        {% if author.url %}<a href="{{ author.url }}" target="_blank" rel="noopener">{{ author.name }}</a>{% else %}<span>{{ author.name }}</span>{% endif %}{% unless forloop.last %}<span class="reading-card__separator"> · </span>{% endunless %}
+      {% endfor %}
+    </p>
+    <div class="reading-card__descriptions">
+      <p lang="en">{{ note.description_en }}</p>
+      <p lang="zh-CN">{{ note.description_zh }}</p>
+    </div>
+    <div class="reading-card__links">
+      {% if note.source_url %}<a class="reading-card__source-link" href="{{ note.source_url }}" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span></a>{% else %}<span class="reading-card__source-link reading-card__source-link--disabled">Source</span>{% endif %}
+      <a class="reading-card__notes-link" href="{{ note.notes_url }}" target="_blank" rel="noopener">My Notes <span aria-hidden="true">↗</span></a>
+      <time class="reading-card__updated" data-note-updated hidden></time>
+    </div>
+  </div>
+</article>
