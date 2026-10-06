@@ -1,6 +1,6 @@
 {% assign card_index = include.index | default: 1 %}
 {% assign note = include.note %}
-<article class="reading-card"{% if include.hidden %} hidden{% endif %} data-reading-status="{{ note.status }}" data-note-key="{{ note.title | slugify }}" data-github-path="{{ note.github_path | escape }}" data-fallback-updated-at="{{ note.updated_at | escape }}" data-fallback-update-url="{{ note.updated_url | default: note.notes_url | escape }}">
+<article class="reading-card"{% if include.hidden %} hidden{% endif %} data-reading-status="{{ note.status }}" data-note-key="{{ note.title | slugify }}" data-github-repo="{{ note.github_repo | default: site.repository | escape }}" data-github-path="{{ note.github_path | escape }}" data-fallback-updated-at="{{ note.updated_at | escape }}" data-fallback-update-url="{{ note.updated_url | default: note.notes_url | escape }}">
   <div class="reading-card__cover reading-card__cover--{{ note.cover_theme }}{% if note.cover_image %} reading-card__cover--image{% endif %}">
     {% if note.cover_image %}
       <img class="reading-card__cover-image" src="{{ note.cover_image | relative_url }}" alt="{{ note.title }} cover" loading="lazy">
