@@ -7,7 +7,7 @@
 
 # Site Settings
 title                    : "es4er"
-description              : "be happy"
+description              : "Fortune favours the brave."
 url                      : "https://es4er.github.io"
 repository               : "es4er/es4er.github.io"
 google_scholar_stats_use_cdn : true
@@ -26,7 +26,7 @@ author:
   name             : "es4er"
   display_name     : "es4er"
   avatar           : "https://github.com/es4er.png"
-  bio              : "be happy"
+  bio              : "Fortune favours the brave."
   location         :
   employer         :
   pubmed           : 

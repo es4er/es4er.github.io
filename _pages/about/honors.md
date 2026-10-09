@@ -11,5 +11,6 @@
 <span class="anchor" id="honors-and-awards"></span>
 <!-- ========================================================================================================================================== -->
 # 🏅 Honors and Awards
-
-*To be updated.*
+- *2026* **Mathematical Contest in Modeling (MCM) / Interdisciplinary Contest in Modeling (ICM)**, Honorable Mention
+- *2026* **China Collegiate Computing Contest — Network Technology Challenge**, National First Prize
+- **The 17th China College Students' Service Outsourcing Innovation and Entrepreneurship Competition**, National Third Prize
